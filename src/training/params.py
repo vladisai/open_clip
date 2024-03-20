@@ -452,6 +452,18 @@ def parse_args(args):
         action="store_true",
         help='Use SigLip (sigmoid) loss.'
     )
+    parser.add_argument(
+        "--soft-loss",
+        default=False,
+        action="store_true",
+        help='Use soft loss.'
+    )
+    parser.add_argument(
+        "--soft-loss-temp",
+        default=0.1,
+        type=float,
+        help='Soft loss softmax temp.'
+    )
 
     args = parser.parse_args(args)
 

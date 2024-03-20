@@ -25,6 +25,8 @@ try:
 except ImportError:
     hvd = None
 
+def worker_init_fn(worker_id):
+    os.sched_setaffinity(0, range(os.cpu_count()))
 
 class CsvDataset(Dataset):
     def __init__(self, input_filename, transforms, img_key, caption_key, sep="\t", tokenizer=None):
@@ -420,6 +422,7 @@ def get_wds_dataset(args, preprocess_img, is_train, epoch=0, floor=False, tokeni
         shuffle=False,
         num_workers=args.workers,
         persistent_workers=args.workers > 0,
+        worker_init_fn=worker_init_fn,
     )
 
     # FIXME not clear which approach is better, with_epoch before vs after dataloader?
@@ -466,6 +469,7 @@ def get_csv_dataset(args, preprocess_fn, is_train, epoch=0, tokenizer=None):
         pin_memory=True,
         sampler=sampler,
         drop_last=is_train,
+        worker_init_fn=worker_init_fn,
     )
     dataloader.num_samples = num_samples
     dataloader.num_batches = len(dataloader)
